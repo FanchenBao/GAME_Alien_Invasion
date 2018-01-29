@@ -8,9 +8,9 @@ def check_events():
 		if event.type == pygame.QUIT:
 			sys.exit()
 
-def update_screen(background_color, screen, ship):
+def update_screen(ai_settings, screen, ship):
 	# redraw the scren during each pass of the loop
-	screen.fill(background_color)
+	screen.fill(ai_settings.background_color)
 	ship.blitme()
 
 	# display the most recently drawn screen.
