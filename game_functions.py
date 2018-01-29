@@ -11,11 +11,20 @@ def check_events(ship):
 		elif event.type == pygame.KEYDOWN:
 			# check whether the key press is the right arrow key
 			if event.key == pygame.K_RIGHT:
-				# move ship to the right
-				ship.rect.centerx += 1
+				# set the moving flag to true so that ship continues moving right
+				ship.moving_right = True
 			elif event.key == pygame.K_LEFT:
-				# move ship to the left
-				ship.rect.centerx -= 1
+				# set the moving flag to true so that ship continues moving left
+				ship.moving_left = True
+		
+		elif event.type == pygame.KEYUP:
+			if event.key == pygame.K_RIGHT:
+			# set the moving flag to false so that ship stops moving when right arrow key is released
+				ship.moving_right = False
+			elif event.key == pygame.K_LEFT:
+			# set the moving flag to false so that ship stops moving when left arrow key is released
+				ship.moving_left = False
+	
 
 def update_screen(ai_settings, screen, ship):
 	# redraw the scren during each pass of the loop
