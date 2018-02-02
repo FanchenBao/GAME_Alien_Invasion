@@ -18,7 +18,7 @@ class Ship():
 		self.center = float(self.rect.centerx)
 		# get width and height of the image rectangle
 		self.image_width = float(self.rect.right - self.rect.left)
-		self.image_height = float(self.rect.top - self.rect.bottom)
+		self.image_height = float(self.rect.bottom - self.rect.top)
 		# movement flag
 		self.moving_right = False
 		self.moving_left = False
