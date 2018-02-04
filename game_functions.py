@@ -9,13 +9,21 @@ def fire_bullet(ai_settings, screen, ship, bullets):
 		new_bullet = Bullet(ai_settings, screen, ship)
 		bullets.add(new_bullet)
 
+def get_alien_per_row(ai_settings, alien_width):
+	# determine how many aliens can fit in one row
+	available_space_x = ai_settings.screen_width - alien_width * 2
+	alien_per_row = int(available_space_x / (alien_width * 2))
+	return(alien_per_row)
+
 def create_alien_fleet(screen, ai_settings, aliens):
-	# create a default alien to pass the parameter alien_per_row
+	# create a default alien which is NOT added to the alien fleet
 	default_alien = Alien(screen, ai_settings)
-	for number_of_alien in range(default_alien.alien_per_row):
+	alien_width = default_alien.rect.width
+	alien_per_row = get_alien_per_row(ai_settings, alien_width)
+	for number_of_alien in range(alien_per_row):
 		alien = Alien(screen, ai_settings)
 		# each new alien is positioned to the right of the previous one with one alien width of space in between
-		alien_x = alien.rect.x + number_of_alien * alien.rect.width * 2
+		alien_x = alien.rect.x + number_of_alien * alien_width * 2
 		alien.rect.x = alien_x
 		aliens.add(alien)
 

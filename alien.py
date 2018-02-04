@@ -18,9 +18,7 @@ class Alien(Sprite):
 		self.rect.y = self.rect.height
 		# store a decimal value for the ship's center
 		self.x = float(self.rect.x)
-		# determine how many aliens can fit in one row
-		self.available_space_x = ai_settings.screen_width - self.rect.width * 2
-		self.alien_per_row = int(self.available_space_x / (self.rect.width * 2))
+	
 		# get alien speed
 		# self.speed = ai_settings.alien_speed
 
