@@ -6,7 +6,7 @@ class Ship():
 		self.screen = screen
 		self.ai_settings = ai_settings
 
-		#load the shit image and get its rect
+		#load the ship image and get its rect
 		self.image = pygame.image.load('images/ship.bmp')
 		self.rect = self.image.get_rect()
 		self.screen_rect = self.screen.get_rect()
@@ -16,9 +16,6 @@ class Ship():
 		self.rect.bottom = self.screen_rect.bottom
 		# store a decimal value for the ship's center
 		self.center = float(self.rect.centerx)
-		# get width and height of the image rectangle
-		self.image_width = float(self.rect.right - self.rect.left)
-		self.image_height = float(self.rect.bottom - self.rect.top)
 		# movement flag
 		self.moving_right = False
 		self.moving_left = False
@@ -28,14 +25,14 @@ class Ship():
 		''' ship will NOT disappear from the edge (different code compared to the book'''
 		if self.moving_right:
 			self.center += self.ai_settings.ship_speed
-			self.current_right = self.center + self.image_width/2
+			self.current_right = self.center + self.rect.width/2
 			if self.current_right > self.screen_rect.right:
-				self.center = self.screen_rect.right - self.image_width/2
+				self.center = self.screen_rect.right - self.rect.width/2
 		if self.moving_left:
 			self.center -= self.ai_settings.ship_speed
-			self.current_left = self.center - self.image_width/2
+			self.current_left = self.center - self.rect.width/2
 			if self.current_left < self.screen_rect.left:
-				self.center = self.screen_rect.left + self.image_width/2
+				self.center = self.screen_rect.left + self.rect.width/2
 
 		# update the ship's current location, must pass self.center back to self.rect.centerx to change ship's location
 		self.rect.centerx = self.center

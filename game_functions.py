@@ -1,12 +1,23 @@
 import sys
 import pygame
 from bullet import Bullet
+from alien import Alien
 
 def fire_bullet(ai_settings, screen, ship, bullets):
 	# fire a bullet if the limit is not reached yet
 	if len(bullets) < ai_settings.bullet_allowed:
 		new_bullet = Bullet(ai_settings, screen, ship)
 		bullets.add(new_bullet)
+
+def create_alien_fleet(screen, ai_settings, aliens):
+	# create a default alien to pass the parameter alien_per_row
+	default_alien = Alien(screen, ai_settings)
+	for number_of_alien in range(default_alien.alien_per_row):
+		alien = Alien(screen, ai_settings)
+		# each new alien is positioned to the right of the previous one with one alien width of space in between
+		alien_x = alien.rect.x + number_of_alien * alien.rect.width * 2
+		alien.rect.x = alien_x
+		aliens.add(alien)
 
 def check_key_down_event(event, ai_settings, screen, ship, bullets):
 	# determine action when key is pushed down
@@ -44,13 +55,14 @@ def check_events(ai_settings, screen, ship, bullets):
 			check_key_up_event(event, ship)
 	
 
-def update_screen(ai_settings, screen, ship, bullets):
+def update_screen(ai_settings, screen, ship, bullets, aliens):
 	# redraw the scren during each pass of the loop
 	screen.fill(ai_settings.background_color)
 	# draw each bullet BEHIND the ship, so bullet drawn ahead of ship
 	for bullet in bullets.sprites():
 		bullet.draw_bullet()
 	ship.blitme()
+	aliens.draw(screen)
 	# display the most recently drawn screen.
 	pygame.display.flip()
 
