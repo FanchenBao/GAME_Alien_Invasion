@@ -19,6 +19,8 @@ def check_key_down_event(event, ai_settings, screen, ship, bullets):
 	elif event.key == pygame.K_SPACE:
 		# create new bullet each time spacebar is pressed
 		fire_bullet(ai_settings, screen, ship, bullets)
+	elif event.key == pygame.K_q:
+		sys.exit()
 
 def check_key_up_event(event, ship):
 	# determine action when key is released
