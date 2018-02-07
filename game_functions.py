@@ -15,11 +15,19 @@ def get_alien_per_row(ai_settings, alien_width):
 	alien_per_row = int(available_space_x / (alien_width * 2))
 	return(alien_per_row)
 
-def create_alien(screen, ai_settings, number_of_alien, aliens):
+def get_row_per_screen(ai_settings, alien_height):
+	# determine how many rows of aliens can fit in one screen
+	available_space_y = ai_settings.screen_height - alien_height * 3
+	row_per_screen = int(available_space_y / (alien_height * 2))
+	return(row_per_screen)
+
+def create_alien(screen, ai_settings, number_of_alien, number_of_row, aliens):
 	alien = Alien(screen, ai_settings)
 	# each new alien is positioned to the right of the previous one with one alien width of space in between
 	alien_x = alien.rect.x + number_of_alien * alien.rect.width * 2
+	alien_y = alien.rect.y + number_of_row * alien.rect.height * 2
 	alien.rect.x = alien_x
+	alien.rect.y = alien_y
 	aliens.add(alien)
 
 
@@ -27,8 +35,10 @@ def create_alien_fleet(screen, ai_settings, aliens):
 	# create a default alien which is NOT added to the alien fleet
 	default_alien = Alien(screen, ai_settings)
 	alien_per_row = get_alien_per_row(ai_settings, default_alien.rect.width)
-	for number_of_alien in range(alien_per_row):
-		create_alien(screen, ai_settings, number_of_alien, aliens)
+	row_per_screen = get_row_per_screen(ai_settings, default_alien.rect.height)
+	for number_of_row in range(row_per_screen):
+		for number_of_alien in range(alien_per_row):
+			create_alien(screen, ai_settings, number_of_alien, number_of_row, aliens)
 
 def check_key_down_event(event, ai_settings, screen, ship, bullets):
 	# determine action when key is pushed down

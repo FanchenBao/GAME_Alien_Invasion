@@ -1,8 +1,8 @@
 class Settings():
 	''' to store all settings for alien_invasion'''
 	def __init__(self):
-		self.screen_height = 600
-		self.screen_width = 900
+		self.screen_height = 700
+		self.screen_width = 1050
 		self.background_color = (230, 230, 230)
 		self.ship_speed = 50
 
