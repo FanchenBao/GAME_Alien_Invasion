@@ -7,7 +7,6 @@ class Alien(Sprite):
 		'''initialize alien and determine its original position on screen'''
 		self.screen = screen
 		self.ai_settings = ai_settings
-
 		#load the alien image and get its rect
 		self.image = pygame.image.load('images/alien.bmp')
 		self.rect = self.image.get_rect()
@@ -16,15 +15,21 @@ class Alien(Sprite):
 		# start new alien NEAR the top left of screen
 		self.rect.x = self.rect.width
 		self.rect.y = self.rect.height
-		# store a decimal value for the ship's center
-		self.x = float(self.rect.x)
-	
-		# get alien speed
-		# self.speed = ai_settings.alien_speed
 
-	# def update(self):
-	# 	self.x += self.speed
-	# 	self.rect.x = self.x
+		# store a decimal value for alien's location for fine tuning position
+		self.x = float(self.rect.x)
+		
+	def check_edges(self):
+		'''check whether an alien ship has hit the edge'''
+		if self.rect.right >= self.screen_rect.right:
+			return True
+		elif self.rect.left <= 0:
+			return True
+
+	def update(self):
+		''' update current alien position'''
+		self.x += self.ai_settings.alien_speed * self.ai_settings.fleet_direction
+		self.rect.x = self.x
 
 		
 
