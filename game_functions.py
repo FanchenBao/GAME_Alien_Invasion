@@ -15,9 +15,9 @@ def get_alien_per_row(ai_settings, alien_width):
 	alien_per_row = int(available_space_x / (alien_width * 2))
 	return(alien_per_row)
 
-def get_row_per_screen(ai_settings, alien_height):
+def get_row_per_screen(ai_settings, alien_height, ship_height):
 	# determine how many rows of aliens can fit in one screen
-	available_space_y = ai_settings.screen_height - alien_height * 3
+	available_space_y = ai_settings.screen_height - alien_height * 3 - ship_height
 	row_per_screen = int(available_space_y / (alien_height * 2))
 	return(row_per_screen)
 
@@ -31,11 +31,11 @@ def create_alien(screen, ai_settings, number_of_alien, number_of_row, aliens):
 	aliens.add(alien)
 
 
-def create_alien_fleet(screen, ai_settings, aliens):
+def create_alien_fleet(screen, ai_settings, aliens, ship):
 	# create a default alien which is NOT added to the alien fleet
 	default_alien = Alien(screen, ai_settings)
 	alien_per_row = get_alien_per_row(ai_settings, default_alien.rect.width)
-	row_per_screen = get_row_per_screen(ai_settings, default_alien.rect.height)
+	row_per_screen = get_row_per_screen(ai_settings, default_alien.rect.height, ship.rect.height)
 	# create a full fleet
 	for number_of_row in range(row_per_screen):
 		for number_of_alien in range(alien_per_row):
@@ -105,7 +105,7 @@ def update_screen(ai_settings, screen, ship, bullets, aliens):
 	# display the most recently drawn screen.
 	pygame.display.flip()
 
-def update_bullets(bullets):
+def update_bullets(screen, ai_settings, aliens, ship, bullets):
 	# update bullet position and delete extra bullets
 	bullets.update()
 
@@ -113,3 +113,13 @@ def update_bullets(bullets):
 	for bullet in bullets.copy():
 		if bullet.rect.bottom <= 0:
 			bullets.remove(bullet)
+
+	check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship)
+
+def check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship):
+	# check to see whether a bullet has hit an alien. If so, remove both the bullet and alien.
+	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+	# remove remaining bullets when all aliens are destroyed
+	if len(aliens) == 0:
+		bullets.empty()
+		create_alien_fleet(screen, ai_settings, aliens, ship)
