@@ -2,6 +2,7 @@ import sys
 import pygame
 from bullet import Bullet
 from alien import Alien
+from time import sleep
 
 def fire_bullet(ai_settings, screen, ship, bullets):
 	# fire a bullet if the limit is not reached yet
@@ -53,10 +54,43 @@ def check_fleet_edges(aliens, ai_settings):
 			change_fleet_direction(aliens, ai_settings)
 			break
 
-def update_aliens(aliens, ai_settings):
+def alien_hit_bottom(aliens):
+	for alien in aliens.sprites():
+		if alien.rect.bottom >= alien.screen_rect.bottom:
+			return True
+			break
+
+def update_aliens(stats, aliens, bullets, ship, screen, ai_settings):
 	'''Update current position of all aliens'''
 	check_fleet_edges(aliens, ai_settings)
 	aliens.update()
+
+	# check alien-ship collision
+	if pygame.sprite.spritecollideany(ship, aliens):
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings)
+
+	# check whehter alien has hit bottom of screen
+	if alien_hit_bottom(aliens):
+		# treat it same as if ship got hit
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings)
+
+def ship_hit(stats, aliens, bullets, ship, screen, ai_settings):
+	''' what happens when ship is hit by alien'''
+	# decrease number of ships left
+	stats.ship_left -= 1
+
+	# emtpy all aliens and bullets when ship is hit
+	aliens.empty()
+	bullets.empty()
+
+	# reposition ship
+	ship.center = ship.screen_rect.centerx
+
+	# recreate alien fleet
+	create_alien_fleet(screen, ai_settings, aliens, ship)
+
+	# give a little pause
+	sleep(0.5)
 
 def check_key_down_event(event, ai_settings, screen, ship, bullets):
 	# determine action when key is pushed down

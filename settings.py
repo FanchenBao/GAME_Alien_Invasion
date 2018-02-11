@@ -4,7 +4,10 @@ class Settings():
 		self.screen_height = 700
 		self.screen_width = 1050
 		self.background_color = (230, 230, 230)
+		
+		# ship settings
 		self.ship_speed = 50
+		self.ship_limit = 3
 
 		# bullet settings
 		self.bullet_speed = 2
@@ -14,7 +17,7 @@ class Settings():
 		self.bullet_allowed = 4
 
 		# alien settings
-		self.alien_speed = 2
+		self.alien_speed = 6
 		self.alien_drop_speed = 10
 		# alien fleet moving direction. 1 = move right, -1 = move left
 		self.fleet_direction = 1
