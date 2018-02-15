@@ -25,7 +25,7 @@ def run_game():
 	aliens = Group()
 
 	# create a play button
-	msg = 'Play'
+	msg = 'Press "P" to Play'
 	play_button = Button(screen, ai_settings, msg)
 	
 	# create an alient fleet
