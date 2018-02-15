@@ -94,6 +94,7 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings):
 		sleep(0.5)
 	else:
 		stats.game_active = False
+		pygame.mouse.set_visible(True)
 
 def check_key_down_event(event, ai_settings, screen, ship, bullets):
 	# determine action when key is pushed down
@@ -136,11 +137,14 @@ def check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens)
 
 def check_play_button(play_button, stats, mouse_x, mouse_y, aliens, bullets, screen, ai_settings, ship):
 	# click play_button to play the game again
-	if play_button.rect.collidepoint(mouse_x, mouse_y):
+	button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
+	if button_clicked:
 		# to prevent clicking the button area (without button present) 
 		# and restarting the game. Game restarts ONLY when game inactive and mouse click
 		if not stats.game_active:
 			game_restart(stats, aliens, bullets, screen, ai_settings, ship)
+			# hide the mouse cursor
+			pygame.mouse.set_visible(False)
 
 def game_restart(stats, aliens, bullets, screen, ai_settings, ship):
 	# restart the game by resetting stats and clearing out remnants of previous game
