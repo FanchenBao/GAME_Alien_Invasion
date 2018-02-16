@@ -12,3 +12,4 @@ class GameStats():
 		self.ship_left = self.ai_settings.ship_limit
 		# record game score
 		self.score = 0
+		self.level = 1

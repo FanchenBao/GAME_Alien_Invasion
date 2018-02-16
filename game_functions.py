@@ -60,25 +60,27 @@ def alien_hit_bottom(aliens):
 			return True
 			break
 
-def update_aliens(stats, aliens, bullets, ship, screen, ai_settings):
+def update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board):
 	'''Update current position of all aliens'''
 	check_fleet_edges(aliens, ai_settings)
 	aliens.update()
 
 	# check alien-ship collision
 	if pygame.sprite.spritecollideany(ship, aliens):
-		ship_hit(stats, aliens, bullets, ship, screen, ai_settings)
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board)
 
 	# check whehter alien has hit bottom of screen
 	if alien_hit_bottom(aliens):
 		# treat it same as if ship got hit
-		ship_hit(stats, aliens, bullets, ship, screen, ai_settings)
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board)
 
-def ship_hit(stats, aliens, bullets, ship, screen, ai_settings):
+def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board):
 	''' what happens when ship is hit by alien'''
-	if stats.ship_left > 1:
-		# decrease number of ships left
-		stats.ship_left -= 1
+	# decrease number of ships left
+	stats.ship_left -= 1
+	
+	if stats.ship_left > 0:
+		
 
 		# emtpy all aliens and bullets when ship is hit
 		aliens.empty()
@@ -86,6 +88,9 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings):
 
 		# reposition ship
 		ship.center = ship.screen_rect.centerx
+
+		# decrease ship counts on top left corner
+		score_board.prep_ships()
 
 		# recreate alien fleet
 		create_alien_fleet(screen, ai_settings, aliens, ship)
@@ -95,6 +100,9 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings):
 	else:
 		stats.game_active = False
 		pygame.mouse.set_visible(True)
+
+		# to show there is no ship left
+		score_board.prep_ships()
 
 def check_key_down_event(event, ai_settings, screen, ship, bullets, stats, aliens, score_board):
 	# determine action when key is pushed down
@@ -159,6 +167,8 @@ def game_restart(stats, aliens, bullets, screen, ai_settings, ship, score_board)
 	stats.game_active = True
 	stats.reset_stats()
 	score_board.prep_score()
+	score_board.prep_level()
+	score_board.prep_ships()
 	ai_settings.initialize_dynamic_settings()
 	# empty out any remaining aliens or bullets
 	aliens.empty()
@@ -214,7 +224,14 @@ def check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship, sta
 		# level up by increasing speed for every element
 		ai_settings.increase_speed()
 
+		# update level information
+		stats.level += 1
+		score_board.prep_level()
+
 		create_alien_fleet(screen, ai_settings, aliens, ship)
+
+		# give a little pause
+		sleep(0.5)
 
 def check_high_score(stats, score_board):
 	if stats.score > stats.high_score:

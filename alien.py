@@ -14,7 +14,7 @@ class Alien(Sprite):
 
 		# start new alien NEAR the top left of screen
 		self.rect.x = self.rect.width
-		self.rect.y = self.rect.height
+		self.rect.y = self.rect.height * 2
 
 		# store a decimal value for alien's location for fine tuning position
 		self.x = float(self.rect.x)

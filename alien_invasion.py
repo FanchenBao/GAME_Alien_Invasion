@@ -26,8 +26,9 @@ def run_game():
 	aliens = Group()
 
 	# create a play button
-	msg = 'Press "P" to Play'
-	play_button = Button(screen, ai_settings, msg)
+	msg1 = 'Press "P" to Play'
+	msg2 = 'Press "Q" to Quit'
+	play_button = Button(screen, ai_settings, msg1, msg2)
 
 	score_board = ScoreBoard(screen, ai_settings, stats)
 	
@@ -40,7 +41,7 @@ def run_game():
 		if stats.game_active:
 			ship.update()
 			gf.update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board)
-			gf.update_aliens(stats, aliens, bullets, ship, screen, ai_settings)
+			gf.update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board)
 		gf.update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board)
 		
 run_game()
