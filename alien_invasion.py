@@ -19,7 +19,8 @@ def run_game():
 	pygame.display.set_caption("Alien Invasion")
 
 	# create an instance to store game stats
-	stats = GameStats(ai_settings)
+	filename = 'high_score.txt'
+	stats = GameStats(ai_settings, filename)
 
 	ship = Ship(screen, ai_settings)
 	bullets = Group()
@@ -37,7 +38,7 @@ def run_game():
 
 	# The main loop of the game
 	while True:
-		gf.check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board)
+		gf.check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board, filename)
 		if stats.game_active:
 			ship.update()
 			gf.update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board)

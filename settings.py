@@ -29,9 +29,9 @@ class Settings():
 
 	def initialize_dynamic_settings(self):
 		''' the following settings change throughout the game'''
-		self.ship_speed = 5
+		self.ship_speed = 4
 		self.bullet_speed = 4
-		self.alien_speed = 40
+		self.alien_speed = 3
 		# alien fleet moving direction. 1 = move right, -1 = move left
 		self.fleet_direction = 1
 

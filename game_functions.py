@@ -104,7 +104,7 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board):
 		# to show there is no ship left
 		score_board.prep_ships()
 
-def check_key_down_event(event, ai_settings, screen, ship, bullets, stats, aliens, score_board):
+def check_key_down_event(event, ai_settings, screen, ship, bullets, stats, aliens, score_board, filename):
 	# determine action when key is pushed down
 	if event.key == pygame.K_RIGHT:
 		# set the moving flag to true so that ship continues moving right
@@ -116,6 +116,8 @@ def check_key_down_event(event, ai_settings, screen, ship, bullets, stats, alien
 		# create new bullet each time spacebar is pressed
 		fire_bullet(ai_settings, screen, ship, bullets)
 	elif event.key == pygame.K_q:
+		# save high score and then quit
+		record_high_score(stats.high_score, filename)
 		sys.exit()
 
 	# press "P" to play the game	
@@ -135,21 +137,31 @@ def check_key_up_event(event, ship):
 	# set the moving flag to false so that ship stops moving when left arrow key is released
 		ship.moving_left = False
 
-def check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board):
+def check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board, filename):
 	# an event loop to monitor user's input (press key or move mouse)
 	# The one below checks whether user clicks to close the program.
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
+			# save high score and then quit
+			record_high_score(stats.high_score, filename)
 			sys.exit()
 		# check whether the event is a key press
 		elif event.type == pygame.KEYDOWN:
-			check_key_down_event(event, ai_settings, screen, ship, bullets, stats, aliens, score_board)
+			check_key_down_event(event, ai_settings, screen, ship, bullets, stats, aliens, score_board, filename)
 		elif event.type == pygame.KEYUP:
 			check_key_up_event(event, ship)
+
+
 		# check for mouseclick on play button
 		# elif event.type == pygame.MOUSEBUTTONDOWN:
 		# 	mouse_x, mouse_y = pygame.mouse.get_pos()
 		# 	check_play_button(play_button, stats, mouse_x, mouse_y, aliens, bullets, screen, ai_settings, ship)
+
+def record_high_score(high_score, filename):
+	'''record high score in a separate file so that each new game starts with a previous high score'''
+	str_high_score = str(high_score)
+	with open(filename, 'w') as file_object:
+		file_object.write(str_high_score) 
 
 def check_play_button(play_button, stats, mouse_x, mouse_y, aliens, bullets, screen, ai_settings, ship):
 	# click play_button to play the game again
@@ -165,11 +177,14 @@ def check_play_button(play_button, stats, mouse_x, mouse_y, aliens, bullets, scr
 def game_restart(stats, aliens, bullets, screen, ai_settings, ship, score_board):
 	# restart the game by resetting stats and clearing out remnants of previous game
 	stats.game_active = True
+	
+	# reset all the stats
 	stats.reset_stats()
-	score_board.prep_score()
-	score_board.prep_level()
-	score_board.prep_ships()
 	ai_settings.initialize_dynamic_settings()
+
+	# reset all the scoreboard images
+	prep_scoreboard_images(score_board)
+
 	# empty out any remaining aliens or bullets
 	aliens.empty()
 	bullets.empty()
@@ -177,6 +192,11 @@ def game_restart(stats, aliens, bullets, screen, ai_settings, ship, score_board)
 	create_alien_fleet(screen, ai_settings, aliens, ship)
 	#reposition ship to center
 	ship.center = ship.screen_rect.centerx
+
+def prep_scoreboard_images(score_board):
+	score_board.prep_score()
+	score_board.prep_level()
+	score_board.prep_ships()
 	
 
 def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board):
