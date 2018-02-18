@@ -12,7 +12,7 @@ class GameStats():
 		self.ship_left = self.ai_settings.ship_limit
 		# record game score
 		self.score = 0
-		self.level = 4
+		self.level = 1
 
 	def read_high_score(self, filename):
 		'''import all time high score'''

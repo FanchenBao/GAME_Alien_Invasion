@@ -93,7 +93,9 @@ def create_alien_fleet(screen, ai_settings, aliens, ship, stats):
 	# create a default alien which is NOT added to the alien fleet
 	default_alien = Alien(screen, ai_settings)
 	alien_per_row = get_alien_per_row(ai_settings, default_alien.rect.width)
-	row_per_screen = get_row_per_screen(ai_settings, default_alien.rect.height, ship.rect.height)
+	#max_row_per_screen = get_row_per_screen(ai_settings, default_alien.rect.height, ship.rect.height)
+	
+	row_per_screen = ai_settings.rows_each_level(stats)
 	total_alien = alien_per_row * row_per_screen
 	alien_count = 0
 	# create a full fleet
@@ -110,8 +112,6 @@ def create_alien_fleet(screen, ai_settings, aliens, ship, stats):
 		for alien in aliens:
 			if alien.number in designated_aliens:
 				alien.reward_flag = reward_stats.assign_reward()
-
-
 
 def change_fleet_direction(aliens, ai_settings):
 	''' change fleet direction and move aliens down'''

@@ -57,3 +57,17 @@ class Settings():
 		self.bullet_speed *= self.speedup_scale
 		self.alien_speed *= self.speedup_scale
 		self.alien_points = int(self.score_scale * self.alien_points)
+
+	def rows_each_level(self, stats):
+		# determine how many rows of aliens to appear each level
+		# the maximum row number was calculated previously to be 6
+		if stats.level in [1, 2, 3]:
+			return 2
+		if stats.level in [4, 5, 6]:
+			return 3
+		if stats.level in [7, 8, 9]:
+			return 4
+		if stats.level in [10, 11, 12]:
+			return 5
+		if stats.level >= 13:
+			return 6

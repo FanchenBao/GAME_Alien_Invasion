@@ -17,6 +17,9 @@ class Alien(Sprite):
 		# alien needs to be numbered for reward system
 		self.number = 0
 
+		# flag indicating whether an alien fires a missle
+		self.missle = False
+
 		# start new alien NEAR the top left of screen
 		self.rect.x = self.rect.width
 		self.rect.y = self.rect.height * 2
