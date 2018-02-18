@@ -12,6 +12,8 @@ class Settings():
 		self.bullet_color = (60, 60, 60)
 		# maximum projectiles allowed per shot
 		self.max_projectile = 5
+		# set the distance between the projectles fired at the same time
+		self.between_projectile = 7
 
 		# alien settings
 		self.alien_drop_speed = 10
@@ -31,7 +33,7 @@ class Settings():
 		self.reset_reward_settings()
 
 	def reset_reward_settings(self):
-		self.bullet_allowed = 4
+		self.bullet_allowed = 1000
 		# how many projectiles shot out with one spacebar press
 		self.projectile_number = 1
 		self.ship_limit = 3

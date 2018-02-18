@@ -59,8 +59,11 @@ def check_reward_ship_collision(ship, rewards, ai_settings):
 def fire_bullet(ai_settings, screen, ship, bullets):
 	# fire a bullet if the limit is not reached yet
 	if len(bullets) < ai_settings.bullet_allowed:
-		new_bullet = Bullet(ai_settings, screen, ship)
-		bullets.add(new_bullet)
+		x_position = (ai_settings.projectile_number-1) * (-ai_settings.between_projectile)
+		for projectile in range(ai_settings.projectile_number):
+			new_bullet = Bullet(ai_settings, screen, ship, x_position)
+			bullets.add(new_bullet)
+			x_position += 2 * ai_settings.between_projectile
 
 def get_alien_per_row(ai_settings, alien_width):
 	# determine how many aliens can fit in one row

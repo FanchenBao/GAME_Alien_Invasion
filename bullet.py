@@ -4,12 +4,18 @@ from pygame.sprite import Sprite
 class Bullet(Sprite):
 	''' a class to manage bullet'''
 
-	def __init__(self, ai_settings, screen, ship):
+	def __init__(self, ai_settings, screen, ship, x_position):
 		super().__init__()
 		self.screen = screen
+		self.ai_settings = ai_settings
+		self.x_position = x_position
 		# create a bullet rect at (0, 0) position
 		self.rect = pygame.Rect(0, 0, ai_settings.bullet_width, ai_settings.bullet_height)
-		self.rect.centerx = ship.rect.centerx
+		
+		# bullet initial position depends on the projectile number
+		self.rect.centerx = ship.rect.centerx + self.x_position
+		
+		# y coordinate does not change for each projectile
 		self.rect.top = ship.rect.top
 		# store bullet y-coordinate as float to fine tune the speed of bullet
 		self.y = float(self.rect.y)
