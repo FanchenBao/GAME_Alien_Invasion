@@ -35,7 +35,7 @@ def run_game():
 	score_board = ScoreBoard(screen, ai_settings, stats)
 	
 	# create an alient fleet
-	gf.create_alien_fleet(screen, ai_settings, aliens, ship)
+	gf.create_alien_fleet(screen, ai_settings, aliens, ship, stats)
 
 	# The main loop of the game
 	while True:
@@ -43,7 +43,8 @@ def run_game():
 		if stats.game_active:
 			ship.update()
 			gf.update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board, rewards)
-			gf.update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board)
-		gf.update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board)
+			gf.update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards)
+			gf.update_rewards(ship, rewards, ai_settings)
+		gf.update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board, rewards)
 		
 run_game()

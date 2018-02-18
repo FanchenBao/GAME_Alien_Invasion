@@ -31,11 +31,11 @@ class Reward(Sprite):
 			#load the shield image and get its rect
 			self.image = pygame.image.load('images/S.bmp')
 
-			self.rect = self.image.get_rect()
-			self.rect.x = 0
-			self.rect.y = 0
-			# store a decimal value for reward's location for fine tuning position
-			self.y = float(self.rect.y)
+		self.rect = self.image.get_rect()
+		self.rect.x = 0
+		self.rect.y = 0
+		# store a decimal value for reward's location for fine tuning position
+		self.y = float(self.rect.y)
 
 	def update(self):
 		''' update the position of reward'''

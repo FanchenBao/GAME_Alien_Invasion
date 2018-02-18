@@ -7,7 +7,7 @@ class Settings():
 		self.background_color = (230, 230, 230)
 
 		# bullet settings
-		self.bullet_width = 300
+		self.bullet_width = 3
 		self.bullet_height = 15
 		self.bullet_color = (60, 60, 60)
 		# maximum projectiles allowed per shot
@@ -23,7 +23,7 @@ class Settings():
 		self.score_scale = 1.5
 
 		# reward settings
-		self.reward_speed = 4
+		self.reward_speed = 2
 
 		self.initialize_dynamic_settings()
 

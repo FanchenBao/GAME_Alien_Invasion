@@ -3,6 +3,7 @@ import pygame
 from bullet import Bullet
 from alien import Alien
 from reward_stats import RewardStats
+from reward import Reward
 from time import sleep
 from random import sample
 
@@ -26,7 +27,7 @@ def check_defensive_reward(reward_flag, ai_settings):
 	if reward_flag == "S":
 		pass
 
-def create_reward(screen, ai_settings, reward_flag, rewards):
+def create_reward(screen, ai_settings, reward_flag, rewards, alien):
 	# create a new reward at the same position where a designated alien is hit
 	reward = Reward(screen, ai_settings, reward_flag)
 	reward.rect.x = alien.rect.x
@@ -34,16 +35,16 @@ def create_reward(screen, ai_settings, reward_flag, rewards):
 	reward.rect.y = reward.y
 	rewards.add(reward)
 
-def update_rewards():
+def update_rewards(ship, rewards, ai_settings):
 	# update reward position and delete reward when it hits ship or disappears off the screen
-	rewards.upate()
+	rewards.update()
 
 	# delete rewards that have traveled outside the screen from the Group
 	for reward in rewards.copy():
 		if reward.rect.top >= reward.screen_rect.bottom:
 			rewards.remove(reward)
 
-	check_reward_ship_collision()
+	check_reward_ship_collision(ship, rewards, ai_settings)
 
 def check_reward_ship_collision(ship, rewards, ai_settings):
 	# check whether a reward has hit the ship
@@ -100,11 +101,11 @@ def create_alien_fleet(screen, ai_settings, aliens, ship, stats):
 	if stats.level >= 4:
 		reward_stats = RewardStats(stats.level)
 
-	# find the aliens that will carry the reward
-	designated_aliens = sample(range(total_alien), reward_stats.number_of_reward)
-	for alien in aliens:
-		if alien.number in designated_aliens:
-			alien.reward_flag = reward_stats.assign_reward()
+		# find the aliens that will carry the reward
+		designated_aliens = sample(range(total_alien), reward_stats.number_of_reward)
+		for alien in aliens:
+			if alien.number in designated_aliens:
+				alien.reward_flag = reward_stats.assign_reward()
 
 
 
@@ -126,21 +127,21 @@ def alien_hit_bottom(aliens):
 			return True
 			break
 
-def update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board):
+def update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards):
 	'''Update current position of all aliens'''
 	check_fleet_edges(aliens, ai_settings)
 	aliens.update()
 
 	# check alien-ship collision
 	if pygame.sprite.spritecollideany(ship, aliens):
-		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board)
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards)
 
 	# check whehter alien has hit bottom of screen
 	if alien_hit_bottom(aliens):
 		# treat it same as if ship got hit
-		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board)
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards)
 
-def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board):
+def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards):
 	''' what happens when ship is hit by alien'''
 	# decrease number of ships left
 	stats.ship_left -= 1
@@ -148,9 +149,10 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board):
 	if stats.ship_left > 0:
 		
 
-		# emtpy all aliens and bullets when ship is hit
+		# emtpy all aliens and bullets and rewards when ship is hit
 		aliens.empty()
 		bullets.empty()
+		rewards.empty()
 
 		# reposition ship
 		ship.center = ship.screen_rect.centerx
@@ -159,10 +161,10 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board):
 		score_board.prep_ships()
 
 		# recreate alien fleet
-		create_alien_fleet(screen, ai_settings, aliens, ship)
+		create_alien_fleet(screen, ai_settings, aliens, ship, stats)
 
 		# reset all rewards when ship gets hit
-		stats.reset_reward_settings()
+		ai_settings.reset_reward_settings()
 
 		# give a little pause
 		sleep(0.5)
@@ -249,7 +251,7 @@ def game_restart(stats, aliens, bullets, screen, ai_settings, ship, score_board)
 	
 	# reset all the stats
 	stats.reset_stats()
-	stats.reset_reward_settings()
+	ai_settings.reset_reward_settings()
 	ai_settings.initialize_dynamic_settings()
 
 	# reset all the scoreboard images
@@ -259,7 +261,7 @@ def game_restart(stats, aliens, bullets, screen, ai_settings, ship, score_board)
 	aliens.empty()
 	bullets.empty()
 	# create new fleet of aliens
-	create_alien_fleet(screen, ai_settings, aliens, ship)
+	create_alien_fleet(screen, ai_settings, aliens, ship, stats)
 	#reposition ship to center
 	ship.center = ship.screen_rect.centerx
 
@@ -268,7 +270,7 @@ def prep_scoreboard_images(score_board):
 	score_board.prep_level()
 	score_board.prep_ships()
 	
-def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board):
+def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board, rewards):
 	# redraw the scren during each pass of the loop
 	screen.fill(ai_settings.background_color)
 	# draw each bullet BEHIND the ship, so bullet drawn ahead of ship
@@ -276,6 +278,7 @@ def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats
 		bullet.draw_bullet()
 	ship.blitme()
 	aliens.draw(screen)
+	rewards.draw(screen)
 	
 	# draw the play button only when game is inactive
 	if not stats.game_active:
@@ -308,12 +311,13 @@ def check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship, sta
 
 			for alien in aliens:
 				if alien.reward_flag:
-					create_reward(screen, ai_settings, alien.reward_flag, rewards)
+					create_reward(screen, ai_settings, alien.reward_flag, rewards, alien)
 		check_high_score(stats, score_board)	
 
 	# remove remaining bullets when all aliens are destroyed
 	if len(aliens) == 0:
 		bullets.empty()
+		rewards.empty()
 
 		# level up by increasing speed for every element
 		ai_settings.increase_speed()
@@ -322,7 +326,7 @@ def check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship, sta
 		stats.level += 1
 		score_board.prep_level()
 
-		create_alien_fleet(screen, ai_settings, aliens, ship)
+		create_alien_fleet(screen, ai_settings, aliens, ship, stats)
 
 		# give a little pause
 		sleep(0.5)
