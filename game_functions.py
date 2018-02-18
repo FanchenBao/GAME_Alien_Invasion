@@ -19,10 +19,11 @@ def check_offensive_reward(reward_flag, ai_settings):
 	if reward_flag == "U":
 		ai_settings.bullet_allowed = 1000000
 
-def check_defensive_reward(reward_flag, ai_settings):
+def check_defensive_reward(reward_flag, stats, score_board):
 	# increase life
 	if reward_flag == "L":
-		ai_settings.ship_limit += 1
+		stats.ship_left += 1
+		score_board.prep_ships()
 	# make a shield
 	if reward_flag == "S":
 		pass
@@ -35,7 +36,7 @@ def create_reward(screen, ai_settings, reward_flag, rewards, alien):
 	reward.rect.y = reward.y
 	rewards.add(reward)
 
-def update_rewards(ship, rewards, ai_settings):
+def update_rewards(ship, rewards, ai_settings, stats, score_board):
 	# update reward position and delete reward when it hits ship or disappears off the screen
 	rewards.update()
 
@@ -44,15 +45,15 @@ def update_rewards(ship, rewards, ai_settings):
 		if reward.rect.top >= reward.screen_rect.bottom:
 			rewards.remove(reward)
 
-	check_reward_ship_collision(ship, rewards, ai_settings)
+	check_reward_ship_collision(ship, rewards, ai_settings, stats, score_board)
 
-def check_reward_ship_collision(ship, rewards, ai_settings):
+def check_reward_ship_collision(ship, rewards, ai_settings, stats, score_board):
 	# check whether a reward has hit the ship
 	# record the reward
 	reward = pygame.sprite.spritecollideany(ship, rewards)
 	if reward:
 		check_offensive_reward(reward.reward_flag, ai_settings)
-		check_defensive_reward(reward.reward_flag, ai_settings)
+		check_defensive_reward(reward.reward_flag, stats, score_board)
 		# remove the reward that has hit the ship
 		rewards.remove(reward)
 

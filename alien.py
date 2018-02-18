@@ -13,7 +13,7 @@ class Alien(Sprite):
 		self.screen_rect = self.screen.get_rect()
 
 		# set reward flag initially to false
-		self.reward_flag = "M"
+		self.reward_flag = False
 		# alien needs to be numbered for reward system
 		self.number = 0
 

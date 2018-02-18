@@ -18,6 +18,9 @@ class Settings():
 		# alien settings
 		self.alien_drop_speed = 10
 
+		# ship settings
+		self.ship_limit = 3
+		
 		# how quickly the game speeds up
 		self.speedup_scale = 1.1
 
@@ -36,7 +39,6 @@ class Settings():
 		self.bullet_allowed = 4
 		# how many projectiles shot out with one spacebar press
 		self.projectile_number = 1
-		self.ship_limit = 3
 
 	def initialize_dynamic_settings(self):
 		''' the following settings change throughout the game'''
