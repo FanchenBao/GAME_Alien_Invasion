@@ -33,7 +33,7 @@ class Settings():
 		self.reset_reward_settings()
 
 	def reset_reward_settings(self):
-		self.bullet_allowed = 1000
+		self.bullet_allowed = 4
 		# how many projectiles shot out with one spacebar press
 		self.projectile_number = 1
 		self.ship_limit = 3
