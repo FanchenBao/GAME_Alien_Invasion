@@ -12,6 +12,11 @@ class Alien(Sprite):
 		self.rect = self.image.get_rect()
 		self.screen_rect = self.screen.get_rect()
 
+		# set reward flag initially to false
+		self.reward_flag = False
+		# alien needs to be numbered for reward system
+		self.number = 0
+
 		# start new alien NEAR the top left of screen
 		self.rect.x = self.rect.width
 		self.rect.y = self.rect.height * 2

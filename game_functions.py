@@ -2,7 +2,58 @@ import sys
 import pygame
 from bullet import Bullet
 from alien import Alien
+from reward_stats import RewardStats
 from time import sleep
+from random import sample
+
+def check_offensive_reward(reward_flag, ai_settings):
+	# increase number of bullets allowed to coexist on the screen at the same time
+	if reward_flag == "I":
+		ai_settings.bullet_allowed += 1
+	# increase number of projectiles per shot
+	if reward_flag == "M":
+		if ai_settings.projectile_number < ai_settings.max_projectile:
+			ai_settings.projectile_number += 1
+	# set number of bullets allowed to basically unlimited, very rare reward
+	if reward_flag == "U":
+		ai_settings.bullet_allowed = 1000000
+
+def check_defensive_reward(reward_flag, ai_settings):
+	# increase life
+	if reward_flag == "L":
+		ai_settings.ship_limit += 1
+	# make a shield
+	if reward_flag == "S":
+		pass
+
+def create_reward(screen, ai_settings, reward_flag, rewards):
+	# create a new reward at the same position where a designated alien is hit
+	reward = Reward(screen, ai_settings, reward_flag)
+	reward.rect.x = alien.rect.x
+	reward.y = alien.rect.y
+	reward.rect.y = reward.y
+	rewards.add(reward)
+
+def update_rewards():
+	# update reward position and delete reward when it hits ship or disappears off the screen
+	rewards.upate()
+
+	# delete rewards that have traveled outside the screen from the Group
+	for reward in rewards.copy():
+		if reward.rect.top >= reward.screen_rect.bottom:
+			rewards.remove(reward)
+
+	check_reward_ship_collision()
+
+def check_reward_ship_collision(ship, rewards, ai_settings):
+	# check whether a reward has hit the ship
+	# record the reward
+	reward = pygame.sprite.spritecollideany(ship, rewards)
+	if reward:
+		check_offensive_reward(reward.reward_flag, ai_settings)
+		check_defensive_reward(reward.reward_flag, ai_settings)
+		# remove the reward that has hit the ship
+		rewards.remove(reward)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
 	# fire a bullet if the limit is not reached yet
@@ -22,25 +73,40 @@ def get_row_per_screen(ai_settings, alien_height, ship_height):
 	row_per_screen = int(available_space_y / (alien_height * 2))
 	return(row_per_screen)
 
-def create_alien(screen, ai_settings, number_of_alien, number_of_row, aliens):
+def create_alien(screen, ai_settings, number_of_alien, number_of_row, aliens, alien_count):
 	alien = Alien(screen, ai_settings)
 	# each new alien is positioned to the right of the previous one with one alien width of space in between
 	alien.x = alien.rect.x + number_of_alien * alien.rect.width * 2
 	alien_y = alien.rect.y + number_of_row * alien.rect.height * 2
 	alien.rect.x = alien.x
 	alien.rect.y = alien_y
+	# each alien has a different tag number
+	alien.number = alien_count
 	aliens.add(alien)
 
-
-def create_alien_fleet(screen, ai_settings, aliens, ship):
+def create_alien_fleet(screen, ai_settings, aliens, ship, stats):
 	# create a default alien which is NOT added to the alien fleet
 	default_alien = Alien(screen, ai_settings)
 	alien_per_row = get_alien_per_row(ai_settings, default_alien.rect.width)
 	row_per_screen = get_row_per_screen(ai_settings, default_alien.rect.height, ship.rect.height)
+	total_alien = alien_per_row * row_per_screen
+	alien_count = 0
 	# create a full fleet
 	for number_of_row in range(row_per_screen):
 		for number_of_alien in range(alien_per_row):
-			create_alien(screen, ai_settings, number_of_alien, number_of_row, aliens)
+			create_alien(screen, ai_settings, number_of_alien, number_of_row, aliens, alien_count)
+			alien_count += 1
+	# create an instance of reward_stats, based on the game level
+	if stats.level >= 4:
+		reward_stats = RewardStats(stats.level)
+
+	# find the aliens that will carry the reward
+	designated_aliens = sample(range(total_alien), reward_stats.number_of_reward)
+	for alien in aliens:
+		if alien.number in designated_aliens:
+			alien.reward_flag = reward_stats.assign_reward()
+
+
 
 def change_fleet_direction(aliens, ai_settings):
 	''' change fleet direction and move aliens down'''
@@ -94,6 +160,9 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board):
 
 		# recreate alien fleet
 		create_alien_fleet(screen, ai_settings, aliens, ship)
+
+		# reset all rewards when ship gets hit
+		stats.reset_reward_settings()
 
 		# give a little pause
 		sleep(0.5)
@@ -180,6 +249,7 @@ def game_restart(stats, aliens, bullets, screen, ai_settings, ship, score_board)
 	
 	# reset all the stats
 	stats.reset_stats()
+	stats.reset_reward_settings()
 	ai_settings.initialize_dynamic_settings()
 
 	# reset all the scoreboard images
@@ -198,7 +268,6 @@ def prep_scoreboard_images(score_board):
 	score_board.prep_level()
 	score_board.prep_ships()
 	
-
 def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board):
 	# redraw the scren during each pass of the loop
 	screen.fill(ai_settings.background_color)
@@ -217,7 +286,7 @@ def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats
 	# display the most recently drawn screen.
 	pygame.display.flip()
 
-def update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board):
+def update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board, rewards):
 	# update bullet position and delete extra bullets
 	bullets.update()
 
@@ -226,15 +295,20 @@ def update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_boar
 		if bullet.rect.bottom <= 0:
 			bullets.remove(bullet)
 
-	check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship, stats, score_board)
+	check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship, stats, score_board, rewards)
 
-def check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship, stats, score_board):
+def check_bullet_alien_collision(screen, ai_settings, bullets, aliens, ship, stats, score_board, rewards):
 	# check to see whether a bullet has hit an alien. If so, remove both the bullet and alien.
 	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
 	if collisions:
 		for aliens in collisions.values():
+			# calculate score
 			stats.score += ai_settings.alien_points * len(aliens)
 			score_board.prep_score()
+
+			for alien in aliens:
+				if alien.reward_flag:
+					create_reward(screen, ai_settings, alien.reward_flag, rewards)
 		check_high_score(stats, score_board)	
 
 	# remove remaining bullets when all aliens are destroyed

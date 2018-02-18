@@ -5,19 +5,16 @@ class Settings():
 		self.screen_height = 700
 		self.screen_width = 1050
 		self.background_color = (230, 230, 230)
-		
-		# ship settings	
-		self.ship_limit = 3
 
 		# bullet settings
 		self.bullet_width = 300
 		self.bullet_height = 15
 		self.bullet_color = (60, 60, 60)
-		self.bullet_allowed = 4
+		# maximum projectiles allowed per shot
+		self.max_projectile = 5
 
 		# alien settings
 		self.alien_drop_speed = 10
-		
 
 		# how quickly the game speeds up
 		self.speedup_scale = 1.1
@@ -25,7 +22,19 @@ class Settings():
 		# how many points to scale up for alien
 		self.score_scale = 1.5
 
+		# reward settings
+		self.reward_speed = 4
+
 		self.initialize_dynamic_settings()
+
+		# reset settings related to rewards
+		self.reset_reward_settings()
+
+	def reset_reward_settings(self):
+		self.bullet_allowed = 4
+		# how many projectiles shot out with one spacebar press
+		self.projectile_number = 1
+		self.ship_limit = 3
 
 	def initialize_dynamic_settings(self):
 		''' the following settings change throughout the game'''
