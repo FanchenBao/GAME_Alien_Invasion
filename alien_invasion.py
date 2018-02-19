@@ -26,6 +26,7 @@ def run_game():
 	bullets = Group()
 	aliens = Group()
 	rewards = Group()
+	missiles = Group()
 
 	# create a play button
 	msg1 = 'Press "P" to Play'
@@ -39,12 +40,13 @@ def run_game():
 
 	# The main loop of the game
 	while True:
-		gf.check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board, filename)
+		gf.check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board, filename, rewards, missiles)
 		if stats.game_active:
 			ship.update()
-			gf.update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board, rewards)
-			gf.update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards)
+			gf.update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board, rewards, missiles)
+			gf.update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles)
 			gf.update_rewards(ship, rewards, ai_settings, stats, score_board)
-		gf.update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board, rewards)
+			gf.update_missiles(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, score_board)
+		gf.update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board, rewards, missiles)
 		
 run_game()

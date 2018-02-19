@@ -15,6 +15,13 @@ class Settings():
 		# set the distance between the projectles fired at the same time
 		self.between_projectile = 7
 
+		# alien missile settings
+		self.missile_width = 4
+		self.missile_height = 10
+		self.missile_color = (255, 51, 0)
+		self.missile_speed = 4
+		self.max_missile = 5
+
 		# alien settings
 		self.alien_drop_speed = 10
 
@@ -50,6 +57,10 @@ class Settings():
 
 		# how many points earned shooting down one alien
 		self.alien_points = 50
+		# how many missiles will be fired per level
+		self.missile_number = 5
+		# each time a missile is missed, player earn 10 points
+		self.missile_points = 5
 
 	def increase_speed(self):
 		'''increase speed after each level for all moving objects'''
@@ -57,6 +68,7 @@ class Settings():
 		self.bullet_speed *= self.speedup_scale
 		self.alien_speed *= self.speedup_scale
 		self.alien_points = int(self.score_scale * self.alien_points)
+		self.missile_points = int(self.score_scale * self.missile_points)
 
 	def rows_each_level(self, stats):
 		# determine how many rows of aliens to appear each level
