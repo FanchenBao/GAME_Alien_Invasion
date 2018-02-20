@@ -5,6 +5,7 @@ from alien import Alien
 from reward_stats import RewardStats
 from reward import Reward
 from missile import Missile
+from shield import Shield
 from time import sleep
 from random import sample
 
@@ -20,14 +21,16 @@ def check_offensive_reward(reward_flag, ai_settings):
 	if reward_flag == "U":
 		ai_settings.bullet_allowed = 1000000
 
-def check_defensive_reward(reward_flag, stats, score_board):
+def check_defensive_reward(reward_flag, stats, score_board, ai_settings, shields, screen, ship):
 	# increase life
 	if reward_flag == "L":
 		stats.ship_left += 1
 		score_board.prep_ships()
 	# make a shield
 	if reward_flag == "S":
-		pass
+		if ai_settings.shield_number < ai_settings.max_shield:
+			ai_settings.shield_number += 1
+			create_shield(shields, screen, ai_settings, ship)
 
 def create_reward(screen, ai_settings, reward_flag, rewards, alien):
 	# create a new reward at the same position where a designated alien is hit
@@ -37,7 +40,7 @@ def create_reward(screen, ai_settings, reward_flag, rewards, alien):
 	reward.rect.y = reward.y
 	rewards.add(reward)
 
-def update_rewards(ship, rewards, ai_settings, stats, score_board):
+def update_rewards(ship, rewards, ai_settings, stats, score_board, shields, screen):
 	# update reward position and delete reward when it hits ship or disappears off the screen
 	rewards.update()
 
@@ -46,17 +49,37 @@ def update_rewards(ship, rewards, ai_settings, stats, score_board):
 		if reward.rect.top >= reward.screen_rect.bottom:
 			rewards.remove(reward)
 
-	check_reward_ship_collision(ship, rewards, ai_settings, stats, score_board)
+	check_reward_ship_collision(ship, rewards, ai_settings, stats, score_board, shields, screen)
 
-def check_reward_ship_collision(ship, rewards, ai_settings, stats, score_board):
+def check_reward_ship_collision(ship, rewards, ai_settings, stats, score_board, shields, screen):
 	# check whether a reward has hit the ship
 	# record the reward
 	reward = pygame.sprite.spritecollideany(ship, rewards)
 	if reward:
 		check_offensive_reward(reward.reward_flag, ai_settings)
-		check_defensive_reward(reward.reward_flag, stats, score_board)
+		check_defensive_reward(reward.reward_flag, stats, score_board, ai_settings, shields, screen, ship)
 		# remove the reward that has hit the ship
 		rewards.remove(reward)
+
+def create_shield(shields, screen, ai_settings, ship):
+	# create shield based on how many S reward player has collected
+	shield = Shield(screen, ai_settings, ship)
+	# shield is set right above the ship
+	shield.rect.y = ship.rect.y - 15 * ai_settings.shield_number
+	shields.add(shield)
+
+def update_shields(shields, missiles, ai_settings, aliens):
+	# update shield position and its behavior once got hit by missile
+	shields.update()
+
+	collisions_missile_shield = pygame.sprite.groupcollide(missiles, shields, True, True)
+	if collisions_missile_shield:
+		ai_settings.shield_number -= 1
+
+	collisions_alien_shield = pygame.sprite.groupcollide(aliens, shields, False, True)
+	if collisions_alien_shield:
+		ai_settings.shield_number -= 1
+
 
 def fire_bullet(ai_settings, screen, ship, bullets):
 	# fire a bullet if the limit is not reached yet
@@ -155,7 +178,7 @@ def reassign_alien_number(aliens):
 		alien.number = count
 		count += 1
 
-def update_missiles(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles):
+def update_missiles(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields):
 	missiles.update()
 	# delete missiles that have traveled outside the screen from the Group
 	for missile in missiles.copy():
@@ -164,12 +187,12 @@ def update_missiles(stats, aliens, bullets, ship, screen, ai_settings, score_boa
 			stats.score += ai_settings.missile_points
 			score_board.prep_score()
 
-	check_missile_ship_collision(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles)
+	check_missile_ship_collision(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields)
 
-def check_missile_ship_collision(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles):
+def check_missile_ship_collision(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields):
 	# check to see whether a missile has hit the ship
 	if pygame.sprite.spritecollideany(ship, missiles):
-		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles)
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields)
 
 def alien_hit_bottom(aliens):
 	for alien in aliens.sprites():
@@ -177,21 +200,21 @@ def alien_hit_bottom(aliens):
 			return True
 			break
 
-def update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles):
+def update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields):
 	'''Update current position of all aliens'''
 	check_fleet_edges(aliens, ai_settings, screen, missiles)
 	aliens.update()
 
 	# check alien-ship collision
 	if pygame.sprite.spritecollideany(ship, aliens):
-		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles)
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields)
 
 	# check whehter alien has hit bottom of screen
 	if alien_hit_bottom(aliens):
 		# treat it same as if ship got hit
-		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles)
+		ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields)
 
-def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles):
+def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields):
 	''' what happens when ship is hit by alien'''
 	# decrease number of ships left
 	stats.ship_left -= 1
@@ -204,6 +227,7 @@ def ship_hit(stats, aliens, bullets, ship, screen, ai_settings, score_board, rew
 		bullets.empty()
 		rewards.empty()
 		missiles.empty()
+		shields.empty()
 
 		# reposition ship
 		ship.center = ship.screen_rect.centerx
@@ -327,7 +351,7 @@ def prep_scoreboard_images(score_board):
 	score_board.prep_level()
 	score_board.prep_ships()
 	
-def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board, rewards, missiles):
+def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats, score_board, rewards, missiles, shields):
 	# redraw the scren during each pass of the loop
 	screen.fill(ai_settings.background_color)
 	# draw each bullet BEHIND the ship, so bullet drawn ahead of ship
@@ -338,6 +362,7 @@ def update_screen(ai_settings, screen, ship, bullets, aliens, play_button, stats
 	rewards.draw(screen)
 	for missile in missiles.sprites():
 		missile.draw_missile()
+	shields.draw(screen)
 	
 	# draw the play button only when game is inactive
 	if not stats.game_active:

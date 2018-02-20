@@ -22,6 +22,9 @@ class Settings():
 		self.missile_speed = 4
 		self.max_missile = 5
 
+		# max number of shield one can have
+		self.max_shield = 3
+
 		# alien settings
 		self.alien_drop_speed = 10
 
@@ -47,6 +50,9 @@ class Settings():
 		# how many projectiles shot out with one spacebar press
 		self.projectile_number = 1
 
+		# how many shields the ship has currently
+		self.shield_number = 0
+
 	def initialize_dynamic_settings(self):
 		''' the following settings change throughout the game'''
 		self.ship_speed = 4
@@ -58,7 +64,7 @@ class Settings():
 		# how many points earned shooting down one alien
 		self.alien_points = 50
 		# how many missiles will be fired per level
-		self.missile_number = 5
+		self.missile_number = 0
 		# each time a missile is missed, player earn 10 points
 		self.missile_points = 5
 
