@@ -82,13 +82,26 @@ def update_shields(shields, missiles, ai_settings, aliens):
 
 
 def fire_bullet(ai_settings, screen, ship, bullets):
-	# fire a bullet if the limit is not reached yet
-	if len(bullets) < ai_settings.bullet_allowed:
-		x_position = (ai_settings.projectile_number-1) * (-ai_settings.between_projectile)
-		for projectile in range(ai_settings.projectile_number):
-			new_bullet = Bullet(ai_settings, screen, ship, x_position)
-			bullets.add(new_bullet)
-			x_position += 2 * ai_settings.between_projectile
+	# fire a bullet if the limit is not reached yet and when open_fire is true
+	if ai_settings.open_fire:
+		if len(bullets) == 0:
+			create_bullet(ai_settings, bullets, screen, ship)
+		elif len(bullets) < ai_settings.bullet_allowed:
+			#bullet_number = 0
+			for bullet in bullets.sprites():
+				if (ship.rect.top - bullet.rect.bottom) < 10:
+					#bullet_number += 1
+					return
+			# if bullet_number == len(bullets):
+			# 	create_bullet(ai_settings, bullets, screen, ship)
+			create_bullet(ai_settings, bullets, screen, ship)
+
+def create_bullet(ai_settings, bullets, screen, ship):
+	x_position = (ai_settings.projectile_number-1) * (-ai_settings.between_projectile)
+	for projectile in range(ai_settings.projectile_number):
+		new_bullet = Bullet(ai_settings, screen, ship, x_position)
+		bullets.add(new_bullet)
+		x_position += 2 * ai_settings.between_projectile
 
 def get_alien_per_row(ai_settings, alien_width):
 	# determine how many aliens can fit in one row
@@ -262,8 +275,8 @@ def check_key_down_event(event, ai_settings, screen, ship, bullets, stats, alien
 		# set the moving flag to true so that ship continues moving left
 		ship.moving_left = True
 	elif event.key == pygame.K_SPACE:
-		# create new bullet each time spacebar is pressed
-		fire_bullet(ai_settings, screen, ship, bullets)
+		# create bullets when spacebar is pressed down
+		ai_settings.open_fire = True
 	elif event.key == pygame.K_q:
 		# save high score and then quit
 		record_high_score(stats.high_score, filename)
@@ -277,7 +290,7 @@ def check_key_down_event(event, ai_settings, screen, ship, bullets, stats, alien
 			# hide the mouse cursor
 			pygame.mouse.set_visible(False)
 
-def check_key_up_event(event, ship):
+def check_key_up_event(event, ship, ai_settings):
 	# determine action when key is released
 	if event.key == pygame.K_RIGHT:
 	# set the moving flag to false so that ship stops moving when right arrow key is released
@@ -285,6 +298,9 @@ def check_key_up_event(event, ship):
 	elif event.key == pygame.K_LEFT:
 	# set the moving flag to false so that ship stops moving when left arrow key is released
 		ship.moving_left = False
+	elif event.key == pygame.K_SPACE:
+		# stop firing bullets when spacebar is lifted
+		ai_settings.open_fire = False
 
 def check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board, filename, rewards, missiles):
 	# an event loop to monitor user's input (press key or move mouse)
@@ -298,7 +314,7 @@ def check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens,
 		elif event.type == pygame.KEYDOWN:
 			check_key_down_event(event, ai_settings, screen, ship, bullets, stats, aliens, score_board, filename, rewards, missiles)
 		elif event.type == pygame.KEYUP:
-			check_key_up_event(event, ship)
+			check_key_up_event(event, ship, ai_settings)
 
 
 		# check for mouseclick on play button

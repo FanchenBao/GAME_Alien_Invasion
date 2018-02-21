@@ -14,6 +14,8 @@ class Settings():
 		self.max_projectile = 5
 		# set the distance between the projectles fired at the same time
 		self.between_projectile = 7
+		# flag to determine whether bullet firing is on
+		self.open_fire = False
 
 		# alien missile settings
 		self.missile_width = 4

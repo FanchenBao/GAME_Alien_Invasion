@@ -44,6 +44,7 @@ def run_game():
 		gf.check_events(ai_settings, screen, ship, bullets, play_button, stats, aliens, score_board, filename, rewards, missiles)
 		if stats.game_active:
 			ship.update()
+			gf.fire_bullet(ai_settings, screen, ship, bullets)
 			gf.update_bullets(screen, ai_settings, aliens, ship, bullets, stats, score_board, rewards, missiles)
 			gf.update_aliens(stats, aliens, bullets, ship, screen, ai_settings, score_board, rewards, missiles, shields)
 			gf.update_rewards(ship, rewards, ai_settings, stats, score_board, shields, screen)
