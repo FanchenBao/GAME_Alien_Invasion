@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/18/2018
+
+Description:
+Main function module for the game
+'''
+
 import sys
 import pygame
 from bullet import Bullet
@@ -85,15 +93,14 @@ def fire_bullet(ai_settings, screen, ship, bullets):
 	# fire a bullet if the limit is not reached yet and when open_fire is true
 	if ai_settings.open_fire:
 		if len(bullets) == 0:
+			# when there is no bullet, create one no matter what
 			create_bullet(ai_settings, bullets, screen, ship)
 		elif len(bullets) < ai_settings.bullet_allowed:
-			#bullet_number = 0
+			# when there are already bullets, next bullet doesn't fire 
+			# until the previous one is 10 pixels above the ship
 			for bullet in bullets.sprites():
 				if (ship.rect.top - bullet.rect.bottom) < 10:
-					#bullet_number += 1
 					return
-			# if bullet_number == len(bullets):
-			# 	create_bullet(ai_settings, bullets, screen, ship)
 			create_bullet(ai_settings, bullets, screen, ship)
 
 def create_bullet(ai_settings, bullets, screen, ship):

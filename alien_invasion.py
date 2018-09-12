@@ -1,3 +1,12 @@
+'''
+Author: Fanchen Bao
+Date: 02/18/2018
+
+Description:
+Alien Invasion game developed with pygame.
+User controls a ship that can shoot bullets to eliminate aliens dropping down from top of the screen.
+'''
+
 import pygame
 from pygame.sprite import Group
 from settings import Settings

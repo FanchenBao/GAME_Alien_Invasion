@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 01/28/2018
+
+Description:
+Ship class
+'''
+
 import pygame
 from pygame.sprite import Sprite
 

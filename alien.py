@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/06/2018
+
+Description:
+Alien class
+'''
+
 import pygame
 from pygame.sprite import Sprite
 

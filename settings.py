@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/18/2018
+
+Description:
+Settings class, contains default settings for the game.
+'''
+
 class Settings():
 	''' to store all settings for alien_invasion'''
 	def __init__(self):

@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/18/2018
+
+Description:
+Missle class, handle missles fired by aliens.
+'''
+
 import pygame
 from pygame.sprite import Sprite
 

@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/02/2018
+
+Description:
+Bullet class
+'''
+
 import pygame
 from pygame.sprite import Sprite
 

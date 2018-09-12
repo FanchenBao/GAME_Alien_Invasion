@@ -1,3 +1,12 @@
+'''
+Author: Fanchen Bao
+Date: 02/17/2018
+
+Description:
+RewardStats class, handle the statistics related to rewards from hitting alien.
+Note that at different level of the game, the probability for different rewards are different.
+'''
+
 from random import randint
 
 class RewardStats():

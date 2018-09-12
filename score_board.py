@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/15/2018
+
+Description:
+ScoreBoard class, prepares and updates game score, game level, and ships remained.
+'''
+
 import pygame.font
 from pygame.sprite import Group
 from ship import Ship

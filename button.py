@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/13/2018
+
+Description:
+Button class, used for generating messages on the screen.
+'''
+
 import pygame.font
 
 class Button():

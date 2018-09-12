@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/17/2018
+
+Description:
+Reward class, handle the import and drawing of reward images
+'''
+
 import pygame
 from pygame.sprite import Sprite
 

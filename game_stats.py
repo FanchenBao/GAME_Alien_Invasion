@@ -1,3 +1,11 @@
+'''
+Author: Fanchen Bao
+Date: 02/11/2018
+
+Description:
+GameStats class, record and handle major game statistics
+'''
+
 class GameStats():
 	'''track game statistics for alien invasion'''
 	def __init__(self, ai_settings, filename):
