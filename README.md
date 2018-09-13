@@ -2,6 +2,8 @@
 Developed with pygame
 
 __*Main project from Chapter 12 of "Python Crash Course", but with major modifications*__
+
+* __alien_invasion.py__ is the driver file.
 * User controls a ship (left and right key) to shoot down (spacebar) all aliens droppin down from the sky. User loses one life if the ship is shot by alien's missle or touched by the alien.
 * Game over when user loses all his/her lives.
 * User starts with 4 bullets (maximum 4 bullets allowed on screen) with single projectile for each shot. 
